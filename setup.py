@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 import re
 
 try:
@@ -6,12 +6,14 @@ try:
 except ImportError:
     from distutils.core import setup
 
-with open("loguru/__init__.py", "r") as file:
+with Path("loguru/__init__.py").open("r") as f:
     regex_version = r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]'
-    version = re.search(regex_version, file.read(), re.MULTILINE).group(1)
+    version = re.search(regex_version, f.read(), re.MULTILINE).group(1)
 
-with open("README.rst", "rb") as file:
-    readme = file.read().decode("utf-8")
+readme = Path("README.rst").read_text("utf-8")
+tests_require = [
+    tr.strip() for tr in Path("test-requirements.txt").read_text("utf-8").split("\n")
+]
 
 setup(
     name="loguru",
@@ -50,21 +52,6 @@ setup(
         "colorama>=0.3.4 ; sys_platform=='win32'",
         "win32_setctime>=1.0.0 ; sys_platform=='win32'",
     ],
-    extras_require={
-        "dev": [
-            "black>=19.3b0 ; python_version>='3.6'",
-            "codecov>=2.0.15",
-            "colorama>=0.3.4",
-            "flake8>=3.7.7",
-            "isort>=4.3.20",
-            "tox>=3.9.0",
-            "tox-travis>=0.12",
-            "pytest>=4.6.2",
-            "pytest-cov>=2.7.1",
-            "Sphinx>=1.7.4",
-            "sphinx-autobuild>=0.7",
-            "sphinx-rtd-theme>=0.3",
-        ]
-    },
+    tests_require=tests_require,
     python_requires=">=3.5",
 )
